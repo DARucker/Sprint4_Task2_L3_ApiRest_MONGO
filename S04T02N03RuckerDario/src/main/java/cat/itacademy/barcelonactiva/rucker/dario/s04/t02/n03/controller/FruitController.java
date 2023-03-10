@@ -27,13 +27,13 @@ public class FruitController {
         return  ResponseEntity.status(HttpStatus.CREATED).body(fruitService.createFruit(fruit));
     }
     @GetMapping(value = "/getOne/{id}")
-    public ResponseEntity<Fruit> get(@PathVariable int id){
+    public ResponseEntity<Fruit> get(@PathVariable String id){
         LOG.info("Using method getFruit");
-        Fruit fruit = fruitService.getFruit(id);
+        Optional<Fruit> fruit = fruitService.getFruit(id);
         if(null == fruit){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(fruit);
+        return ResponseEntity.ok(fruit.get());
     }
     @GetMapping(value = "/getAll")
     public  ResponseEntity<List<Fruit>> getAll(){
@@ -45,24 +45,26 @@ public class FruitController {
         return ResponseEntity.ok(allFruit);
     }
     @PutMapping(value = "/update/{id}")
-    public ResponseEntity<Fruit> update(@RequestBody Fruit fruit, @PathVariable int id){
+    public ResponseEntity<Fruit> update(@RequestBody Fruit fruit, @PathVariable String id){
         LOG.info("Using method update");
-        fruit.setId(id);
         Fruit fruitDB = fruitService.updateFruit(fruit);
         if(fruitDB == null){
             return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(fruitDB);
+        };
+        return ResponseEntity.ok(fruit);
     }
 
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<Fruit> delete (@PathVariable int id){
+    public ResponseEntity<Fruit> delete (@PathVariable String id){
         LOG.info("Using method delete");
-        Fruit fruitDelete = fruitService.getFruit(id);
+        Optional<Fruit> fruitDelete = fruitService.getFruit(id);
+
         if(fruitDelete == null){
             return ResponseEntity.notFound().build();
         }
-        fruitService.deleteFruit(fruitDelete.getId());
-        return ResponseEntity.ok(fruitDelete);
+        fruitService.deleteFruit(fruitDelete.get().getId());
+        return ResponseEntity.ok(fruitDelete.get());
+        }
     }
-}
+
+
